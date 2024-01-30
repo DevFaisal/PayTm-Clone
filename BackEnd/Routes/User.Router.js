@@ -77,7 +77,7 @@ router.post('/signin', async (req, res) => {
         return res.status(400).json({ error: "Invalid Password" });
     }
     else {
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
         res.json({
             message: "User logged in successfully",
             token: token,
@@ -114,8 +114,8 @@ router.put('/', authMiddleware, async (req, res) => {
 })
 
 
-router.get("bulk", async (req, res) => {
-    const filter = req.query.filter || '';
+router.get("/bulk", async (req, res) => {
+    const filter = req.query.filter || "";
 
     const users = await User.find({
         $or: [{
@@ -131,13 +131,35 @@ router.get("bulk", async (req, res) => {
 
     res.json({
         user: users.map(user => ({
-            username: username,
+            username: user.username,
             firstName: user.firstName,
             lastName: user.lastName,
             _id: user._id
         }))
     })
 })
+
+router.get('/me', authMiddleware, async (req, res) => {
+    const userId = req.userId
+
+    const user = await User.findOne({
+        _id: userId
+    })
+
+    if (!user) {
+        res.status(410).json({
+            message: "Invalid User"
+        })
+    }
+    else {
+
+        res.status(200).json({
+            message: "Valid User",
+        })
+    }
+
+})
+
 
 
 export default router;
