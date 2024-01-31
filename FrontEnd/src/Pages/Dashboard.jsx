@@ -1,18 +1,27 @@
 import React from 'react'
 import User from "../Components/User"
 import Balance from './../Components/Balance';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
+    const navigate = useNavigate()
     return (
         <div>
             <nav className='flex bg-gray-300 p-3 justify-between'>
                 <div>
-                    <h1 className='text-xl font-bold'>
+                    <h1 className='text-2xl font-bold'>
                         Paytm
                     </h1>
                 </div>
                 <div>
-                    Logout
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem("token")
+                            navigate('/signin')
+                        }}
+                    >
+                        Logout
+                    </button>
                 </div>
             </nav>
             <div>

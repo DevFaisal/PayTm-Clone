@@ -21,7 +21,7 @@ const singInSchema = z.object({
 
 //SingUp route
 router.post('/signup', async (req, res) => {
-
+    
     const { userName, password, firstName, lastName } = req.body;
     const isValid = singUpSchema.safeParse(req.body);
 
@@ -60,31 +60,37 @@ router.post('/signup', async (req, res) => {
 
 //SignIn route
 router.post('/signin', async (req, res) => {
+    console.log("req.body", req.body)
     const { userName, password } = req.body;
     const { success } = singInSchema.safeParse(req.body);
+    try {
 
-    if (!success) {
-        res.status(400).json({ error: "Invalid Input" });
+        if (!success) {
+            res.status(400).json({ error: "Invalid Input" });
+        }
+
+        const user = await User.findOne({ userName });
+
+        if (!user) {
+            return res.status(400).json({ error: "User does not exist" });
+        }
+
+        if (user.password !== password) {
+            return res.status(400).json({ error: "Invalid Password" });
+        }
+        else {
+            const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+            return res.json({
+                message: "User logged in successfully",
+                token: token,
+            })
+        }
+
+    } catch (error) {
+
+        res.status(500).json({ error: "Something went wrong" });
     }
 
-    const user = await User.findOne({ userName });
-
-    if (!user) {
-        return res.status(400).json({ error: "User does not exist" });
-    }
-
-    if (user.password !== password) {
-        return res.status(400).json({ error: "Invalid Password" });
-    }
-    else {
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-        res.json({
-            message: "User logged in successfully",
-            token: token,
-        })
-    }
-
-    res.status(411).json({ error: "Error while logging in" })
 
 })
 
