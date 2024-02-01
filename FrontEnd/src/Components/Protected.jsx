@@ -1,25 +1,13 @@
-import React from 'react'
-import { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from "axios"
 
-function Protected({ children }) {
+function Protected({ children, auth }) {
     const navigate = useNavigate()
-    const [auth, setAuth] = useState(false)
-
-    useEffect(() => {
-        axios.get("http://localhost:3000/api/v1/user/me", {
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("token")
-            }
-        }).then((res) => {
-            setAuth(res.status === 200 ? true : false)
-        })
-    }, [])
-
+    console.log(auth)
     if (!auth) {
-        navigate('/signin')
-        return null
+        return useEffect(() => {
+            navigate("/signin")
+        }, [])
     }
     else {
         return (

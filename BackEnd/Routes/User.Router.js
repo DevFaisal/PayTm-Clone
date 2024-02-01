@@ -21,7 +21,7 @@ const singInSchema = z.object({
 
 //SingUp route
 router.post('/signup', async (req, res) => {
-    
+
     const { userName, password, firstName, lastName } = req.body;
     const isValid = singUpSchema.safeParse(req.body);
 
@@ -60,7 +60,6 @@ router.post('/signup', async (req, res) => {
 
 //SignIn route
 router.post('/signin', async (req, res) => {
-    console.log("req.body", req.body)
     const { userName, password } = req.body;
     const { success } = singInSchema.safeParse(req.body);
     try {
